@@ -1,0 +1,8 @@
+.addExpenseContainer {
+  display: flex;
+  padding: 1em 1em 1em 0;
+}
+
+.addExpenseContainer > *:not(:first-child) {
+  margin-left: 1em;
+}
