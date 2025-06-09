@@ -1,6 +1,4 @@
 import { TabView, TabPanel } from "primereact/tabview";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 
 import ExpensesPage from "@/components/ExpensesPage";
 
@@ -63,7 +61,7 @@ export default function () {
     <div className={styles.page}>
       <TabView>
         <TabPanel header="Tous">
-          <ExpensesPage userId={undefined} />
+          <ExpensesPage />
         </TabPanel>
         <TabPanel header="Courses">
           <ExpensesPage />

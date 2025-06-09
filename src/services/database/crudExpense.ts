@@ -17,7 +17,6 @@ export async function createExpense({
         title,
         amount,
         userId,
-        creationDate: new Date(),
       },
     });
 
