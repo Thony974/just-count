@@ -11,6 +11,21 @@ async function main() {
     data: { name: "Romy" },
   });
 
+  // Update default salary
+  await prisma.salary.create({
+    data: {
+      amount: 0,
+      userId: 1,
+    },
+  });
+
+  await prisma.salary.create({
+    data: {
+      amount: 0,
+      userId: 2,
+    },
+  });
+
   // Create common expenses
   await prisma.expense.createMany({
     data: [

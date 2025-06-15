@@ -1,3 +1,5 @@
+import { ExpenseItem } from "./types";
+
 export function formatCurrency(value: number) {
   return new Intl.NumberFormat("fr-FR", {
     style: "currency",
@@ -7,6 +9,10 @@ export function formatCurrency(value: number) {
 
 export function formatDate(date: Date) {
   return new Date(date).toLocaleDateString("fr-FR");
+}
+
+export function computeExpensesAmount(expenseItems: ExpenseItem[]) {
+  return expenseItems.reduce((acc, item) => acc + item.amount, 0);
 }
 
 export function computeQuota({
