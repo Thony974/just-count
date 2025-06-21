@@ -33,13 +33,13 @@ export default function UserBalanceInput({
           />
         </div>
         <div className={styles.inputContent}>
-          <label htmlFor="partnerQuota" className={styles.textAlignRight}>
+          <label htmlFor="quota" className={styles.textAlignRight}>
             {quotaLabel}
           </label>
           <InputNumber
             disabled
             placeholder="0,00 €"
-            inputId="partnerQuota"
+            inputId="quota"
             mode="currency"
             currency="EUR"
             locale="fr-FR"

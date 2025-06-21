@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useRouter } from "next/navigation";
+
 import { Button } from "primereact/button";
 
 import { getExpenses } from "@database/crudExpense";
@@ -17,6 +19,8 @@ import ExpensesPickList from "@components/ExpensesPickList";
 import styles from "./page.module.css";
 
 export default function () {
+  const router = useRouter();
+
   const [mySalary, setMySalary] = useState(0);
   const [partnerSalary, setPartnerSalary] = useState(0);
 
@@ -26,9 +30,12 @@ export default function () {
   const [myExpenses, setMyExpenses] = useState<ExpenseItem[]>([]);
   const [partnerExpenses, setPartnerExpenses] = useState<ExpenseItem[]>([]);
 
-  const [myTotalExpensesSelection, setMyTotalExpensesSelection] = useState(0);
-  const [partnerTotalExpensesSelection, setPartnerTotalExpensesSelection] =
-    useState(0);
+  const [myExpensesSelection, setMyExpensesSelection] = useState<ExpenseItem[]>(
+    []
+  );
+  const [partnerExpensesSelection, setPartnerExpensesSelection] = useState<
+    ExpenseItem[]
+  >([]);
 
   const [commonExpenses, setCommonExpenses] = useState<ExpenseItem[]>([]);
 
@@ -92,21 +99,15 @@ export default function () {
     _: ExpenseItem[],
     target: ExpenseItem[]
   ) => {
-    const expenses = computeExpensesAmount(target);
-    setMyTotalExpensesSelection(expenses);
+    setMyExpensesSelection(target);
   };
 
   const onPartnerExpensesSelectionChanged = (
     _: ExpenseItem[],
     target: ExpenseItem[]
   ) => {
-    const expenses = computeExpensesAmount(target);
-    setPartnerTotalExpensesSelection(expenses);
+    setPartnerExpensesSelection(target);
   };
-
-  const commonExpensesAmount = useMemo(() => {
-    return computeExpensesAmount(commonExpenses);
-  }, [commonExpenses]);
 
   useEffect(() => {
     fetchData();
@@ -126,9 +127,9 @@ export default function () {
     const result = computeQuota({
       mySalary: mySalary,
       partnerSalary: partnerSalary,
-      myExpenses: myTotalExpensesSelection,
-      partnerExpenses: partnerTotalExpensesSelection,
-      commonExpenses: commonExpensesAmount,
+      myExpenses: myExpensesSelection,
+      partnerExpenses: partnerExpensesSelection,
+      commonExpenses: commonExpenses,
     });
 
     setMyQuota(result.myQuota);
@@ -136,8 +137,8 @@ export default function () {
   }, [
     mySalary,
     partnerSalary,
-    myTotalExpensesSelection,
-    partnerTotalExpensesSelection,
+    myExpensesSelection,
+    partnerExpensesSelection,
     commonExpenses,
   ]);
 
@@ -168,7 +169,11 @@ export default function () {
       />
 
       <div className={styles.submitButtonContainer}>
-        <Button label={"Terminé"} icon="pi pi-check" />
+        <Button
+          label={"Terminé"}
+          icon="pi pi-check"
+          onClick={() => router.push("/report")}
+        />
       </div>
     </>
   );

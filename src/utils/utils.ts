@@ -1,4 +1,4 @@
-import { ExpenseItem } from "./types";
+import { AccountingParameters, AccountingResults, ExpenseItem } from "./types";
 
 export function formatCurrency(value: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -21,14 +21,12 @@ export function computeQuota({
   myExpenses,
   partnerExpenses,
   commonExpenses,
-}: {
-  mySalary: number;
-  partnerSalary: number;
-  myExpenses: number;
-  partnerExpenses: number;
-  commonExpenses: number;
-}): { myQuota: number; partnerQuota: number } {
-  const totalExpenses = myExpenses + partnerExpenses + commonExpenses;
+}: AccountingParameters): AccountingResults {
+  const myExpensesAmount = computeExpensesAmount(myExpenses);
+  const partnerExpensesAmount = computeExpensesAmount(partnerExpenses);
+  const commonExpensesAmount = computeExpensesAmount(commonExpenses);
+  const totalExpenses =
+    myExpensesAmount + partnerExpensesAmount + commonExpensesAmount;
 
   // Trivial cases
   if (totalExpenses === 0) return { myQuota: 0, partnerQuota: 0 };
@@ -41,8 +39,8 @@ export function computeQuota({
   }
 
   return {
-    myQuota: totalExpenses / (1 + partnerSalary / mySalary) - myExpenses,
+    myQuota: totalExpenses / (1 + partnerSalary / mySalary) - myExpensesAmount,
     partnerQuota:
-      totalExpenses / (1 + mySalary / partnerSalary) - partnerExpenses,
+      totalExpenses / (1 + mySalary / partnerSalary) - partnerExpensesAmount,
   };
 }
