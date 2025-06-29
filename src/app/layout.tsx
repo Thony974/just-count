@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Image from "next/image";
 
-import { Menubar } from "primereact/menubar";
+import Menubar from "@components/MenuBar";
 
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primeicons/primeicons.css";
@@ -44,14 +44,7 @@ export default function RootLayout({
           <Image alt="" src={"/icon.png"} width={50} height={50} />
           <h1>Le compte juste</h1>
         </div>
-        <Menubar
-          model={[
-            { label: "Mes dépenses", url: "/" },
-            { label: "Dépenses conjoint", url: "/partnerExpenses" },
-            { label: "Dépenses communes", url: "/monthlyFees" },
-            { label: "Comptabilité", url: "/accounting" },
-          ]}
-        />
+        <Menubar />
         {children}
       </body>
     </html>

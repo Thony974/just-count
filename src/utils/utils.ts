@@ -1,4 +1,6 @@
-import { AccountingParameters, AccountingResults, ExpenseItem } from "./types";
+import { Expense } from "@prisma/client";
+
+import { AccountingParameters, AccountingResults } from "./types";
 
 export function formatCurrency(value: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -11,36 +13,46 @@ export function formatDate(date: Date) {
   return new Date(date).toLocaleDateString("fr-FR");
 }
 
-export function computeExpensesAmount(expenseItems: ExpenseItem[]) {
-  return expenseItems.reduce((acc, item) => acc + item.amount, 0);
+export function computeExpensesAmount(expenses: Expense[]) {
+  return expenses.reduce((acc, item) => acc + item.amount, 0);
 }
 
 export function computeQuota({
-  mySalary,
-  partnerSalary,
-  myExpenses,
-  partnerExpenses,
+  userAccounting,
   commonExpenses,
-}: AccountingParameters): AccountingResults {
-  const myExpensesAmount = computeExpensesAmount(myExpenses);
-  const partnerExpensesAmount = computeExpensesAmount(partnerExpenses);
-  const commonExpensesAmount = computeExpensesAmount(commonExpenses);
-  const totalExpenses =
-    myExpensesAmount + partnerExpensesAmount + commonExpensesAmount;
+}: AccountingParameters): AccountingResults[] {
+  if (userAccounting.length < 1)
+    throw new Error("Cannot compute quota with no users");
 
-  // Trivial cases
-  if (totalExpenses === 0) return { myQuota: 0, partnerQuota: 0 };
-  if (mySalary === 0 && partnerSalary === 0) {
-    return { myQuota: -totalExpenses / 2, partnerQuota: -totalExpenses / 2 }; // So sad case...
-  } else if (mySalary === 0) {
-    return { myQuota: 0, partnerQuota: totalExpenses };
-  } else if (partnerSalary === 0) {
-    return { myQuota: totalExpenses, partnerQuota: 0 };
+  const totalSalaries = userAccounting.reduce(
+    (acc, { salary }) => acc + salary,
+    0
+  );
+  const totalExpenses =
+    userAccounting
+      .map(({ expenses }) => computeExpensesAmount(expenses))
+      .reduce((acc, amount) => acc + amount, 0) +
+    computeExpensesAmount(commonExpenses);
+
+  /** Trivial cases */
+  // Wonderfull world
+  if (totalExpenses === 0) {
+    return userAccounting.map(({ userId }) => ({ userId, quota: 0 }));
+  }
+  // So sad one...
+  if (totalSalaries === 0) {
+    const quota = -totalExpenses / userAccounting.length;
+    return userAccounting.map(({ userId }) => ({ userId, quota }));
   }
 
-  return {
-    myQuota: totalExpenses / (1 + partnerSalary / mySalary) - myExpensesAmount,
-    partnerQuota:
-      totalExpenses / (1 + mySalary / partnerSalary) - partnerExpensesAmount,
-  };
+  const quotas = userAccounting.map(({ userId, salary, expenses }) => {
+    const userExpensesAmount = computeExpensesAmount(expenses);
+    const userQuota = (salary / totalSalaries) * totalExpenses;
+    return { userId, quota: userQuota - userExpensesAmount };
+  });
+
+  console.log("User accounting:", userAccounting);
+  console.log("Computed quotas:", quotas);
+
+  return quotas;
 }

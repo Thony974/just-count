@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 
 import { PickList, PickListChangeEvent } from "primereact/picklist";
 
-import { ExpenseItem } from "@/utils/types";
+import { Expense } from "@prisma/client";
+
 import {
   computeExpensesAmount,
   formatCurrency,
@@ -12,24 +13,24 @@ import {
 import styles from "./expensesPickList.module.css";
 
 export interface ExpensesPickListProps {
-  expensesInput: ExpenseItem[];
-  onSelectionChanged: (source: ExpenseItem[], target: ExpenseItem[]) => void;
+  expensesInput: Expense[];
+  onSelectionChanged: (source: Expense[], target: Expense[]) => void;
 }
 
 export default function ExpensesPickList({
   expensesInput,
   onSelectionChanged,
 }: ExpensesPickListProps) {
-  const [expensesSource, setExpensesSource] = useState<ExpenseItem[]>([]);
-  const [expensesTarget, setExpensesTarget] = useState<ExpenseItem[]>([]);
+  const [expensesSource, setExpensesSource] = useState<Expense[]>([]);
+  const [expensesTarget, setExpensesTarget] = useState<Expense[]>([]);
   const [totalExpensesAmount, setTotalExpensesAmount] = useState({
     source: 0,
     target: 0,
   });
 
   const onDistributionChanged = (e: PickListChangeEvent) => {
-    const sourceList = e.source as ExpenseItem[];
-    const targetList = e.target as ExpenseItem[];
+    const sourceList = e.source as Expense[];
+    const targetList = e.target as Expense[];
 
     setExpensesSource(sourceList);
     setExpensesTarget(targetList);
@@ -49,7 +50,7 @@ export default function ExpensesPickList({
     setExpensesSource(expensesInput);
   }, [expensesInput]);
 
-  const itemTemplate = (item: ExpenseItem) => {
+  const itemTemplate = (item: Expense) => {
     return (
       <div className={styles.pickListItem}>
         <div>{item.title}</div>

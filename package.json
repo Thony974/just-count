@@ -16,9 +16,11 @@
     "primeicons": "^7.0.0",
     "primereact": "^10.9.5",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
+    "@ag-media/react-pdf-table": "2.0.3",
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -27,7 +29,6 @@
     "eslint-config-next": "15.3.2",
     "prisma": "^6.8.2",
     "tsx": "^4.19.4",
-    "typescript": "^5",
-    "@ag-media/react-pdf-table": "2.0.3"
+    "typescript": "^5"
   }
 }

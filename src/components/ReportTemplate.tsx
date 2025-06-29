@@ -6,11 +6,8 @@ import {
   TableCell,
 } from "@ag-media/react-pdf-table";
 
-import {
-  AccountingParameters,
-  AccountingResults,
-  ExpenseItem,
-} from "@/utils/types";
+import { Expense } from "@prisma/client";
+import useStore from "@/services/statemanager/store";
 
 import { styles } from "./reportTemplateStyle";
 
@@ -19,7 +16,7 @@ const TableExpenses = ({
   expenses,
 }: {
   title: string;
-  expenses: ExpenseItem[];
+  expenses: Expense[];
 }) => (
   <View style={styles.section}>
     <Text>{title}</Text>
@@ -44,41 +41,44 @@ const TableExpenses = ({
   </View>
 );
 
-export interface ReportProps extends AccountingParameters, AccountingResults {}
+export default function () {
+  const users = useStore((state) => state.users);
+  const userSalary = useStore((state) => state.userSalary);
+  const userQuota = useStore((state) => state.userQuota);
+  const userExpensesPicked = useStore((state) => state.userExpensesPicked);
+  const commonExpenses = useStore((state) => state.commonExpenses);
 
-export default function ({
-  mySalary,
-  partnerSalary,
-  myExpenses,
-  partnerExpenses,
-  commonExpenses,
-  myQuota,
-  partnerQuota,
-}: ReportProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.section}>
-          <Text>Compte 06/2025</Text>
+          <Text>Compte ??/2025</Text>
         </View>
-        <View style={styles.section}>
-          <View style={styles.section}>
-            <Text>{`Mon salaire: ${mySalary}€`}</Text>
+        {users.map(({ id, name }) => (
+          <View key={`accounting-${id}`} style={styles.section}>
+            <View style={styles.section}>
+              <Text>{`Salaire ${name}: ${userSalary.get(id) ?? 0}€`}</Text>
+            </View>
+            <TableExpenses
+              title={`Dépenses ${name}`}
+              expenses={userExpensesPicked.get(id) ?? []}
+            />
           </View>
-          <TableExpenses title="Mes Dépenses" expenses={myExpenses} />
-        </View>
-        <View style={styles.section}>
+        ))}
+        {users.length ? (
           <View style={styles.section}>
-            <Text>{`Salaire conjoint: ${partnerSalary}€`}</Text>
+            <TableExpenses
+              title="Dépenses communes"
+              expenses={commonExpenses}
+            />
           </View>
-          <TableExpenses title="Dépenses conjoint" expenses={partnerExpenses} />
-        </View>
-        <View style={styles.section}>
-          <TableExpenses title="Dépenses communes" expenses={commonExpenses} />
-        </View>
+        ) : null}
         <View style={styles.quota}>
-          <Text>{`Mon quota: ${myQuota}€`}</Text>
-          <Text>{`Quota conjoint: ${partnerQuota}€`}</Text>
+          {users.map(({ id, name }) => (
+            <Text key={`quota-${id}`}>{`Quota ${name}: ${
+              userQuota.get(id) ? userQuota.get(id)?.toFixed(0) : 0
+            }€`}</Text>
+          ))}
         </View>
       </Page>
     </Document>

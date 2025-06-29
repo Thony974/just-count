@@ -1,20 +1,17 @@
-// TODO: Use data types from prisma schema
-export interface ExpenseItem {
-  id: string;
-  title: string;
-  amount: number;
-  creationDate: Date;
+import { Expense } from "@prisma/client";
+
+export interface UserAccounting {
+  userId: number;
+  salary: number;
+  expenses: Expense[];
 }
 
 export interface AccountingParameters {
-  mySalary: number;
-  partnerSalary: number;
-  myExpenses: ExpenseItem[];
-  partnerExpenses: ExpenseItem[];
-  commonExpenses: ExpenseItem[];
+  userAccounting: UserAccounting[];
+  commonExpenses: Expense[];
 }
 
 export interface AccountingResults {
-  myQuota: number;
-  partnerQuota: number;
+  userId: number;
+  quota: number;
 }

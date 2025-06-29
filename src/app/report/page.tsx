@@ -4,22 +4,16 @@ import { useEffect, useState } from "react";
 
 import { pdf } from "@react-pdf/renderer";
 
-import { ReportProps } from "@/components/ReportTemplate";
+import LoadingComponent from "@/components/LoadingComponent";
 import ReportTemplate from "@/components/ReportTemplate";
 
 import styles from "./page.module.css";
 
-// TO REMOVE: Sample data for demonstration purposes
-import { accountingParametersSample } from "./tmpData";
-
-export default function (props: ReportProps) {
+export default function () {
   const [doc, setDoc] = useState("");
 
   const renderDocument = async () => {
-    const doc = pdf(
-      /* TODO: Replace with actual props */
-      <ReportTemplate {...accountingParametersSample} />
-    );
+    const doc = pdf(<ReportTemplate />);
     const blob = await doc.toBlob();
     setDoc(URL.createObjectURL(blob));
   };
@@ -30,7 +24,11 @@ export default function (props: ReportProps) {
 
   return (
     <div className={styles.page}>
-      {doc ? <iframe src={doc} width={"100%"} height={"700px"} /> : <></>}
+      {doc ? (
+        <iframe src={doc} width={"100%"} height={"700px"} />
+      ) : (
+        <LoadingComponent />
+      )}
     </div>
   );
 }

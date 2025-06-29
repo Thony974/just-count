@@ -1,112 +1,64 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { useRouter } from "next/navigation";
 
 import { Button } from "primereact/button";
 
-import { getExpenses } from "@database/crudExpense";
-import {
-  updateUserSalary,
-  getUserSalary,
-} from "@/services/database/crudSalary";
-import { computeExpensesAmount, computeQuota } from "@/utils/utils";
-import { ExpenseItem } from "@/utils/types";
+import { Expense } from "@prisma/client";
+import useStore from "@/services/statemanager/store";
+import { computeQuota } from "@/utils/utils";
 import UserBalanceInput from "@/components/UserBalanceInput";
 import ExpensesPickList from "@components/ExpensesPickList";
+import LoadingComponent from "@/components/LoadingComponent";
 
 import styles from "./page.module.css";
 
 export default function () {
   const router = useRouter();
 
-  const [mySalary, setMySalary] = useState(0);
-  const [partnerSalary, setPartnerSalary] = useState(0);
+  const users = useStore((state) => state.users);
+  const userSalary = useStore((state) => state.userSalary);
+  const userQuota = useStore((state) => state.userQuota);
+  const userExpenses = useStore((state) => state.userExpenses);
+  const commonExpenses = useStore((state) => state.commonExpenses);
+  const userExpensesPicked = useStore((state) => state.userExpensesPicked);
 
-  const [myQuota, setMyQuota] = useState(0);
-  const [partnerQuota, setPartnerQuota] = useState(0);
-
-  const [myExpenses, setMyExpenses] = useState<ExpenseItem[]>([]);
-  const [partnerExpenses, setPartnerExpenses] = useState<ExpenseItem[]>([]);
-
-  const [myExpensesSelection, setMyExpensesSelection] = useState<ExpenseItem[]>(
-    []
+  const fetchUsers = useStore((state) => state.fetchUsers);
+  const fetchSalary = useStore((state) => state.fetchSalary);
+  const fetchExpenses = useStore((state) => state.fetchExpenses);
+  const updateSalary = useStore((state) => state.updateSalary);
+  const pickUserExpenses = useStore((state) => state.pickUserExpenses);
+  const resetUserExpensesPicked = useStore(
+    (state) => state.resetUserExpensesPicked
   );
-  const [partnerExpensesSelection, setPartnerExpensesSelection] = useState<
-    ExpenseItem[]
-  >([]);
+  const setQuota = useStore((state) => state.setQuota);
 
-  const [commonExpenses, setCommonExpenses] = useState<ExpenseItem[]>([]);
-
-  const fetchingData = useRef(true);
+  const fetchingData = useRef(false);
 
   const fetchData = async () => {
-    let salary = await getUserSalary({ userId: 1 }); // Assuming userId 1 for this example
-    if (typeof salary === "number") setMySalary(salary); // FIXME
+    fetchingData.current = true;
 
-    salary = await getUserSalary({ userId: 2 }); // Assuming userId 2 for this example
-    if (typeof salary === "number") setPartnerSalary(salary); // FIXME
+    // TODO: Fix userId hardcoding
+    await fetchUsers();
+    await fetchSalary(1);
+    await fetchSalary(2);
+    await fetchExpenses(1);
+    await fetchExpenses(2);
+    await fetchExpenses(null);
 
-    let expenses = await getExpenses({ userId: 1 }); // Assuming userId 1 for this example
-    if (expenses.length) {
-      setMyExpenses(
-        expenses.map(({ id, title, amount, creationDate }) => ({
-          id,
-          title,
-          amount,
-          creationDate,
-        }))
-      );
-    }
-
-    expenses = await getExpenses({ userId: 2 }); // Assuming userId 2 for this example
-    if (expenses.length) {
-      setPartnerExpenses(
-        expenses.map(({ id, title, amount, creationDate }) => ({
-          id,
-          title,
-          amount,
-          creationDate,
-        }))
-      );
-    }
-
-    expenses = await getExpenses({ userId: undefined });
-    if (expenses.length) {
-      setCommonExpenses(
-        expenses.map(({ id, title, amount, creationDate }) => ({
-          id,
-          title,
-          amount,
-          creationDate,
-        }))
-      );
-    }
+    resetUserExpensesPicked();
 
     fetchingData.current = false;
   };
 
-  const onMySalaryChanged = (salary: number) => {
-    setMySalary(salary);
+  const onSalaryChanged = (userId: number, amount: number) => {
+    updateSalary({ userId, amount }); // Assuming userId 1 for this example
   };
 
-  const onPartnerSalaryChanged = (salary: number) => {
-    setPartnerSalary(salary);
-  };
-
-  const onMyExpensesSelectionChanged = (
-    _: ExpenseItem[],
-    target: ExpenseItem[]
-  ) => {
-    setMyExpensesSelection(target);
-  };
-
-  const onPartnerExpensesSelectionChanged = (
-    _: ExpenseItem[],
-    target: ExpenseItem[]
-  ) => {
-    setPartnerExpensesSelection(target);
+  const onExpensesPicked = (userId: number, expenses: Expense[]) => {
+    pickUserExpenses(userId, expenses); // Assuming userId 1 for this example
   };
 
   useEffect(() => {
@@ -115,59 +67,42 @@ export default function () {
 
   useEffect(() => {
     if (fetchingData.current) return;
-    updateUserSalary({ userId: 1, amount: mySalary }); // Assuming userId 1 for this example
-  }, [mySalary]);
 
-  useEffect(() => {
-    if (fetchingData.current) return;
-    updateUserSalary({ userId: 2, amount: partnerSalary }); // Assuming userId 2 for this example
-  }, [partnerSalary]);
+    const userAccounting = users.map(({ id }) => ({
+      userId: id,
+      salary: userSalary.get(id) ?? 0,
+      expenses: userExpensesPicked.get(id) ?? [],
+    }));
 
-  useEffect(() => {
     const result = computeQuota({
-      mySalary: mySalary,
-      partnerSalary: partnerSalary,
-      myExpenses: myExpensesSelection,
-      partnerExpenses: partnerExpensesSelection,
+      userAccounting,
       commonExpenses: commonExpenses,
     });
 
-    setMyQuota(result.myQuota);
-    setPartnerQuota(result.partnerQuota);
-  }, [
-    mySalary,
-    partnerSalary,
-    myExpensesSelection,
-    partnerExpensesSelection,
-    commonExpenses,
-  ]);
+    result.forEach(({ userId, quota }) => {
+      setQuota(userId, quota);
+    });
+  }, [userSalary, userExpensesPicked, commonExpenses]);
 
-  return (
+  return fetchingData.current ? (
+    <LoadingComponent />
+  ) : (
     <>
-      <UserBalanceInput
-        salary={mySalary}
-        salaryLabel={"Mon salaire"}
-        quota={myQuota}
-        quotaLabel={"Ma quote part"}
-        onSalaryChanged={onMySalaryChanged}
-      />
-      <ExpensesPickList
-        expensesInput={myExpenses}
-        onSelectionChanged={onMyExpensesSelectionChanged}
-      />
-
-      <UserBalanceInput
-        salary={partnerSalary}
-        salaryLabel={"Salaire conjoint"}
-        quota={partnerQuota}
-        quotaLabel={"Quote part conjoint"}
-        onSalaryChanged={onPartnerSalaryChanged}
-      />
-      <ExpensesPickList
-        expensesInput={partnerExpenses}
-        onSelectionChanged={onPartnerExpensesSelectionChanged}
-      />
-
+      {users.map(({ id, name }) => (
+        <div key={`userPickList-${id}`}>
+          <UserBalanceInput
+            salary={userSalary.get(id) ?? 0}
+            salaryLabel={`Salaire ${name}`}
+            quota={userQuota.get(id) ?? 0}
+            quotaLabel={`Quote part ${name}`}
+            onSalaryChanged={(salary) => onSalaryChanged(id, salary)}
+          />
+          <ExpensesPickList
+            expensesInput={userExpenses.get(id) ?? []}
+            onSelectionChanged={(_, target) => onExpensesPicked(id, target)}
+          />
+        </div>
+      ))}
       <div className={styles.submitButtonContainer}>
         <Button
           label={"Terminé"}

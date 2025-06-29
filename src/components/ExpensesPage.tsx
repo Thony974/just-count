@@ -1,55 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 
-import { getExpenses } from "@database/crudExpense";
+import { Expense } from "@prisma/client";
+
+import useStore from "@/services/statemanager/store";
 import { formatCurrency, formatDate } from "@utils/utils";
-import { ExpenseItem } from "@/utils/types";
+import LoadingComponent from "@/components/LoadingComponent";
 
 import ExpenseInput from "./ExpenseInput";
 
 import styles from "./expensesPage.module.css";
 
 export default function ExpensesPage({ userId }: { userId?: number }) {
-  const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
+  const expenses = userId
+    ? useStore((state) => state.userExpenses.get(userId))
+    : useStore((state) => state.commonExpenses);
 
-  const fetchExpenses = async () => {
-    const result = await getExpenses({ userId });
-    if (result.length) {
-      setExpenses(
-        result.map(({ id, title, amount, creationDate }) => ({
-          id,
-          title,
-          amount,
-          creationDate,
-        }))
-      );
-    }
-  };
+  const loading = useStore((state) => state.loading);
+
+  const fetchExpenses = useStore((state) => state.fetchExpenses);
 
   useEffect(() => {
-    fetchExpenses();
+    fetchExpenses(userId ?? null);
   }, []);
 
   return (
     <div className={styles.page}>
-      <ExpenseInput userId={userId} onNewExpenseAdded={fetchExpenses} />
-      <DataTable value={expenses} className={styles.dataTable}>
-        <Column field="title" header="Nom" />
-        <Column
-          field="amount"
-          header="Montant"
-          body={({ amount }: ExpenseItem) => formatCurrency(amount)}
-        />
-        <Column
-          field="date"
-          header="Date"
-          body={({ creationDate }: ExpenseItem) => formatDate(creationDate)}
-        />
-      </DataTable>
+      <ExpenseInput userId={userId} />
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <DataTable value={expenses} className={styles.dataTable}>
+          <Column field="title" header="Nom" />
+          <Column
+            field="amount"
+            header="Montant"
+            body={({ amount }: Expense) => formatCurrency(amount)}
+          />
+          <Column
+            field="date"
+            header="Date"
+            body={({ creationDate }: Expense) => formatDate(creationDate)}
+          />
+        </DataTable>
+      )}
     </div>
   );
 }

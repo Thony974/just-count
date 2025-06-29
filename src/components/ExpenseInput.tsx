@@ -6,39 +6,31 @@ import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { Button } from "primereact/button";
 
-import { createExpense } from "@database/crudExpense";
+import useStore from "@/services/statemanager/store";
 
 import styles from "./expenseInput.module.css";
 
 export interface ExpenseInputProps {
   userId?: number;
-  onNewExpenseAdded: () => void;
 }
 
-export default function ExpenseInput({
-  userId,
-  onNewExpenseAdded,
-}: ExpenseInputProps) {
+export default function ExpenseInput({ userId }: ExpenseInputProps) {
+  const addExpense = useStore((state) => state.addExpense);
+
   const formRef = useRef<HTMLFormElement>(null);
   const [newExpense, setNewExpense] = useState({
     title: "",
     amount: 0.0,
   });
 
-  const addExpense = async () => {
+  const addNewExpense = async () => {
+    const { title, amount } = newExpense;
     if (!newExpense.title.length) {
       console.error("New expense has no title name");
       return;
     }
 
-    const result = await createExpense({
-      title: newExpense.title,
-      amount: newExpense.amount,
-      userId,
-    });
-
-    if (result) onNewExpenseAdded();
-
+    await addExpense({ title, amount, userId: userId ?? null });
     cleanup();
   };
 
@@ -51,7 +43,7 @@ export default function ExpenseInput({
     <form
       ref={formRef}
       className={styles.addExpenseContainer}
-      action={addExpense}
+      action={addNewExpense}
     >
       <InputText
         name="title"

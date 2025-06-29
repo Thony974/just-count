@@ -1,14 +1,13 @@
 "use server";
 
+import { Salary } from "@prisma/client";
+
 import { prisma } from "@database/prisma";
 
 export async function updateUserSalary({
   amount,
   userId,
-}: {
-  amount: number;
-  userId: number;
-}) {
+}: Pick<Salary, "userId" | "amount">) {
   try {
     const salary = await prisma.salary.update({
       where: { userId },
@@ -34,6 +33,6 @@ export async function getUserSalary({ userId }: { userId: number }) {
     return salary?.amount ?? 0;
   } catch (error) {
     console.error("Error fetching user salary:", error);
-    return [];
+    return 0;
   }
 }
