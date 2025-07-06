@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -29,16 +29,21 @@ export default function () {
   const fetchSalary = useStore((state) => state.fetchSalary);
   const fetchExpenses = useStore((state) => state.fetchExpenses);
   const updateSalary = useStore((state) => state.updateSalary);
-  const pickUserExpenses = useStore((state) => state.pickUserExpenses);
-  const resetUserExpensesPicked = useStore(
-    (state) => state.resetUserExpensesPicked
-  );
   const setQuota = useStore((state) => state.setQuota);
+  const pickUserExpenses = useStore((state) => state.pickUserExpenses);
+  // const resetUserExpensesPicked = useStore(
+  //   (state) => state.resetUserExpensesPicked
+  // );
 
-  const fetchingData = useRef(false);
+  const [fetchingData, setFetchingData] = useState(true);
 
   const fetchData = async () => {
-    fetchingData.current = true;
+    /**
+     * FIXME: Optimization issue, will reload all pages in cache...that's weird
+     * But reset picked expenses causes react-pdf reconcilier issues...
+     */
+    if (userExpensesPicked.size) window.location.reload();
+    // resetUserExpensesPicked();
 
     // TODO: Fix userId hardcoding
     await fetchUsers();
@@ -48,9 +53,7 @@ export default function () {
     await fetchExpenses(2);
     await fetchExpenses(null);
 
-    resetUserExpensesPicked();
-
-    fetchingData.current = false;
+    setFetchingData(false);
   };
 
   const onSalaryChanged = (userId: number, amount: number) => {
@@ -62,11 +65,12 @@ export default function () {
   };
 
   useEffect(() => {
+    setFetchingData(true);
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (fetchingData.current) return;
+    if (fetchingData) return;
 
     const userAccounting = users.map(({ id }) => ({
       userId: id,
@@ -82,9 +86,9 @@ export default function () {
     result.forEach(({ userId, quota }) => {
       setQuota(userId, quota);
     });
-  }, [userSalary, userExpensesPicked, commonExpenses]);
+  }, [userSalary, userExpensesPicked, commonExpenses, fetchingData]);
 
-  return fetchingData.current ? (
+  return fetchingData ? (
     <LoadingComponent />
   ) : (
     <>

@@ -13,9 +13,13 @@ export default function () {
   const [doc, setDoc] = useState("");
 
   const renderDocument = async () => {
-    const doc = pdf(<ReportTemplate />);
-    const blob = await doc.toBlob();
-    setDoc(URL.createObjectURL(blob));
+    try {
+      const doc = pdf(<ReportTemplate />);
+      const blob = await doc.toBlob();
+      setDoc(URL.createObjectURL(blob));
+    } catch (error) {
+      console.error("Error rendering pdf:", error);
+    }
   };
 
   useEffect(() => {
