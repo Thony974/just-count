@@ -1,7 +1,13 @@
 .addExpenseContainer {
   display: flex;
+  flex-direction: row;
+  width: 96vw;
   padding: 1em 1em 1em 0;
 }
+
+/* .expenseInputItem {
+  width: 5em;
+} */
 
 .addExpenseContainer > *:not(:first-child) {
   margin-left: 1em;

@@ -42,3 +42,34 @@ export async function getExpenses({ userId }: { userId: number | null }) {
     return [];
   }
 }
+
+export async function updateExpense(expense: Expense) {
+  console.debug("Updating expense with data:", expense);
+
+  try {
+    const updatedExpense = await prisma.expense.update({
+      where: { id: expense.id },
+      data: expense,
+    });
+
+    return updatedExpense;
+  } catch (error) {
+    console.error("Error updating expense:", error);
+    return null;
+  }
+}
+
+export async function deleteExpenses(ids: string[]) {
+  console.debug("Deleting expenses with ids:", ids);
+
+  try {
+    const deletedExpenses = await prisma.expense.deleteMany({
+      where: { id: { in: ids } },
+    });
+
+    return deletedExpenses;
+  } catch (error) {
+    console.error("Error deleting multiple expenses:", error);
+    return null;
+  }
+}
