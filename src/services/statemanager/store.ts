@@ -8,6 +8,7 @@ import {
   updateUserSalary,
 } from "@/services/database/crudSalary";
 import {
+  cleanupUnplannedExpenses,
   createExpense,
   deleteExpenses,
   getExpenses,
@@ -31,6 +32,7 @@ interface StoreState {
   ) => Promise<void>;
   updateExpense: (expense: Expense) => Promise<Expense | null>;
   deleteExpenses: (id: string[]) => Promise<Prisma.BatchPayload | null>;
+  cleanupUnplannedExpenses: () => Promise<Prisma.BatchPayload | null>;
   pickUserExpenses: (userId: number, expenses: Expense[]) => void;
   resetUserExpensesPicked: () => void;
   setQuota: (userId: number, quota: number) => void;
@@ -167,6 +169,34 @@ const useStore = create<StoreState>((set, get) => ({
       });
       const commonExpenses = state.commonExpenses.filter(
         (expense) => !ids.includes(expense.id)
+      );
+      return { userExpenses, commonExpenses, loading: false };
+    });
+
+    return deletedExpenses;
+  },
+  cleanupUnplannedExpenses: async () => {
+    set({ loading: true });
+    const deletedExpenses = await cleanupUnplannedExpenses();
+    if (!deletedExpenses) {
+      set({ loading: false });
+      return null;
+    }
+
+    set((state) => {
+      const userExpenses = new Map(state.userExpenses);
+      state.userExpenses.forEach((expenses, userId) => {
+        userExpenses.set(
+          userId,
+          expenses.filter((expense) => expense.isPlanned)
+        );
+      });
+
+      // FIXME: Remove deletecExpenses instead idem for deletedExpenses above
+      console.log("Cleanup unplanned expenses:", deletedExpenses);
+
+      const commonExpenses = state.commonExpenses.filter(
+        (expense) => expense.isPlanned
       );
       return { userExpenses, commonExpenses, loading: false };
     });

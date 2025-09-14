@@ -16,6 +16,7 @@ import LoadingComponent from "@/components/LoadingComponent";
 import ExpenseInput from "./ExpenseInput";
 
 import styles from "./expensesPage.module.css";
+import { Tag } from "primereact/tag";
 
 export default function ExpensesPage({ userId }: { userId?: number }) {
   const [selection, setSelection] = useState<Expense[]>([]);
@@ -97,7 +98,13 @@ export default function ExpensesPage({ userId }: { userId?: number }) {
           <Column
             field="date"
             header="Date"
-            body={({ creationDate }: Expense) => formatDate(creationDate)}
+            body={({ creationDate, isPlanned }: Expense) =>
+              isPlanned ? (
+                <Tag severity={"success"} value="Programmée" />
+              ) : (
+                formatDate(creationDate)
+              )
+            }
           />
           <Column rowEditor />
           <Column
@@ -113,6 +120,19 @@ export default function ExpensesPage({ userId }: { userId?: number }) {
               <span
                 className="pi pi-trash"
                 onClick={() => deleteExpenses([id])}
+              ></span>
+            )}
+          />
+          <Column
+            body={(expense: Expense) => (
+              <span
+                className="pi pi-calendar-plus"
+                onClick={() => {
+                  updateExpense({
+                    ...expense,
+                    isPlanned: !expense.isPlanned,
+                  });
+                }}
               ></span>
             )}
           />

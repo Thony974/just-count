@@ -109,7 +109,7 @@ export default function Accounting() {
       ))}
       <div className={styles.submitButtonContainer}>
         <Button
-          label={"Terminé"}
+          label={"Générer le rapport"}
           icon="pi pi-check"
           onClick={() => router.push("/report")}
         />
