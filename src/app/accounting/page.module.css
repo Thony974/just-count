@@ -7,6 +7,12 @@
   background-color: #f0f0f0;
 }
 
+.textAreaContainer {
+  display: flex;
+  margin-top: 1%;
+  width: 100%;
+}
+
 .submitButtonContainer {
   display: flex;
   flex-direction: column;

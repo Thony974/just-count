@@ -23,6 +23,7 @@ interface StoreState {
   userExpenses: Map<number, Expense[]>;
   userExpensesPicked: Map<number, Expense[]>;
   commonExpenses: Expense[];
+  comment: string;
   fetchUsers: () => Promise<void>;
   updateSalary: (salary: Pick<Salary, "userId" | "amount">) => Promise<void>;
   fetchSalary: (userId: number) => Promise<void>;
@@ -36,6 +37,7 @@ interface StoreState {
   pickUserExpenses: (userId: number, expenses: Expense[]) => void;
   resetUserExpensesPicked: () => void;
   setQuota: (userId: number, quota: number) => void;
+  setComment: (comment: string) => void;
 }
 
 const useStore = create<StoreState>((set, get) => ({
@@ -46,6 +48,7 @@ const useStore = create<StoreState>((set, get) => ({
   userExpenses: new Map(),
   userExpensesPicked: new Map(),
   commonExpenses: [],
+  comment: "",
   fetchUsers: async () => {
     // Store users already fetched
     const state = get();
@@ -218,6 +221,9 @@ const useStore = create<StoreState>((set, get) => ({
     set((state) => ({
       userQuota: new Map(state.userQuota).set(userId, quota),
     }));
+  },
+  setComment: (comment: string) => {
+    set({ comment });
   },
 }));
 

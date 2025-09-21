@@ -47,12 +47,21 @@ export default function ReportTemplate() {
   const userQuota = useStore((state) => state.userQuota);
   const userExpensesPicked = useStore((state) => state.userExpensesPicked);
   const commonExpenses = useStore((state) => state.commonExpenses);
+  const comment = useStore((state) => state.comment);
+
+  const getCurrentDateMMYYYY = () => {
+    const now = new Date();
+    return `${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}/${now.getFullYear()}`;
+  };
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.section}>
-          <Text>Compte ??/2025</Text>
+          <Text>Compte {getCurrentDateMMYYYY()}</Text>
         </View>
         {users.map(({ id, name }) => (
           <View key={`accounting-${id}`} style={styles.section}>
@@ -80,6 +89,12 @@ export default function ReportTemplate() {
             }€`}</Text>
           ))}
         </View>
+        {comment.length && (
+          <View style={styles.comment}>
+            <Text style={{ fontWeight: "bold" }}>Commentaires:</Text>
+            <Text>{comment}</Text>
+          </View>
+        )}
       </Page>
     </Document>
   );

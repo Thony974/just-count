@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { PickList, PickListChangeEvent } from "primereact/picklist";
+import { Tag } from "primereact/tag";
 
 import { Expense } from "@prisma/client";
 
@@ -55,7 +56,13 @@ export default function ExpensesPickList({
       <div className={styles.pickListItem}>
         <div>{item.title}</div>
         <div>{formatCurrency(item.amount)}</div>
-        <div>{formatDate(item.creationDate)}</div>
+        <div>
+          {item.isPlanned ? (
+            <Tag severity={"success"} value="Programmée" />
+          ) : (
+            formatDate(item.creationDate)
+          )}
+        </div>
       </div>
     );
   };
