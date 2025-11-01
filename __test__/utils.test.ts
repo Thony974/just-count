@@ -5,6 +5,7 @@ import {
   computeQuota,
   formatCurrency,
   formatDate,
+  getCurrentDateMMYYYY,
 } from "@/utils/utils";
 
 describe("computeQuota", () => {
@@ -40,6 +41,7 @@ describe("computeQuota", () => {
             creationDate: new Date(),
             title: "Expense 1",
             amount: 100,
+            isPlanned: false,
             description: null,
             categoryId: null,
             userId: null,
@@ -55,6 +57,7 @@ describe("computeQuota", () => {
             creationDate: new Date(),
             title: "Expense 2",
             amount: 200,
+            isPlanned: false,
             description: null,
             categoryId: null,
             userId: null,
@@ -68,6 +71,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Common Expense",
         amount: 300,
+        isPlanned: true,
         description: null,
         categoryId: null,
         userId: null,
@@ -99,6 +103,7 @@ describe("computeQuota", () => {
             creationDate: new Date(),
             title: "Billet Paris Nice",
             amount: 1414.14,
+            isPlanned: false,
             ...expenseCommonProps,
           },
         ],
@@ -113,6 +118,7 @@ describe("computeQuota", () => {
             creationDate: new Date(),
             title: "Hello Fresh",
             amount: 778.24,
+            isPlanned: false,
             ...expenseCommonProps,
           },
           {
@@ -121,6 +127,7 @@ describe("computeQuota", () => {
             creationDate: new Date(),
             title: "Gateau photo mariage",
             amount: 580,
+            isPlanned: false,
             ...expenseCommonProps,
           },
           {
@@ -129,6 +136,7 @@ describe("computeQuota", () => {
             creationDate: new Date(),
             title: "Assurance",
             amount: 56.91,
+            isPlanned: false,
             ...expenseCommonProps,
           },
         ],
@@ -141,6 +149,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Courses",
         amount: 400,
+        isPlanned: true,
         ...expenseCommonProps,
       },
       {
@@ -149,6 +158,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Electricité",
         amount: 50,
+        isPlanned: true,
         ...expenseCommonProps,
       },
       {
@@ -157,6 +167,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Box Internet",
         amount: 30,
+        isPlanned: true,
         ...expenseCommonProps,
       },
       {
@@ -165,6 +176,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Rodin",
         amount: 150,
+        isPlanned: true,
         ...expenseCommonProps,
       },
       {
@@ -173,6 +185,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Cantine",
         amount: 120,
+        isPlanned: true,
         ...expenseCommonProps,
       },
       {
@@ -181,6 +194,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Charges Copro",
         amount: 200,
+        isPlanned: true,
         ...expenseCommonProps,
       },
       {
@@ -189,6 +203,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Occasionnel",
         amount: 250,
+        isPlanned: true,
         ...expenseCommonProps,
       },
       {
@@ -197,6 +212,7 @@ describe("computeQuota", () => {
         creationDate: new Date(),
         title: "Ajustement",
         amount: 600,
+        isPlanned: true,
         ...expenseCommonProps,
       },
     ];
@@ -225,6 +241,7 @@ describe("computeExpensesAmount", () => {
         creationDate: new Date(),
         title: "Expense 1",
         amount: 100,
+        isPlanned: false,
         description: null,
         categoryId: null,
         userId: null,
@@ -234,6 +251,7 @@ describe("computeExpensesAmount", () => {
         creationDate: new Date(),
         title: "Expense 2",
         amount: 200,
+        isPlanned: false,
         description: null,
         categoryId: null,
         userId: null,
@@ -243,6 +261,7 @@ describe("computeExpensesAmount", () => {
         creationDate: new Date(),
         title: "Expense 3",
         amount: 300,
+        isPlanned: false,
         description: null,
         categoryId: null,
         userId: null,
@@ -278,5 +297,28 @@ describe("formatDate", () => {
     const date = new Date("invalid-date");
     const result = formatDate(date);
     expect(result).toBe("Invalid Date");
+  });
+});
+
+describe("getCurrentDateMMYYYY", () => {
+  afterEach(() => {
+    // Restore the original Date implementation
+    jest.restoreAllMocks();
+  });
+
+  it("should return the current date in MM/YYYY format", () => {
+    const mockDate = new Date("2025-09-21T00:00:00Z");
+    jest.spyOn(global, "Date").mockImplementation(() => mockDate);
+
+    const result = getCurrentDateMMYYYY();
+    expect(result).toBe("09/2025");
+  });
+
+  it("should handle single-digit months correctly", () => {
+    const mockDate = new Date("2025-02-15T00:00:00Z");
+    jest.spyOn(global, "Date").mockImplementation(() => mockDate);
+
+    const result = getCurrentDateMMYYYY();
+    expect(result).toBe("02/2025");
   });
 });

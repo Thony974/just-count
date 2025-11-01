@@ -13,6 +13,11 @@ export function formatDate(date: Date) {
   return new Date(date).toLocaleDateString("fr-FR");
 }
 
+export function getCurrentDateMMYYYY() {
+  const now = new Date();
+  return `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+}
+
 export function computeExpensesAmount(expenses: Expense[]) {
   return expenses.reduce((acc, item) => acc + item.amount, 0);
 }

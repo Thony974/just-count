@@ -8,6 +8,7 @@ import {
 
 import { Expense } from "@prisma/client";
 import useStore from "@/services/statemanager/store";
+import { getCurrentDateMMYYYY } from "@/utils/utils";
 
 import { styles } from "./reportTemplateStyle";
 
@@ -48,14 +49,6 @@ export default function ReportTemplate() {
   const userExpensesPicked = useStore((state) => state.userExpensesPicked);
   const commonExpenses = useStore((state) => state.commonExpenses);
   const comment = useStore((state) => state.comment);
-
-  const getCurrentDateMMYYYY = () => {
-    const now = new Date();
-    return `${String(now.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}/${now.getFullYear()}`;
-  };
 
   return (
     <Document>
