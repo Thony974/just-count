@@ -6,7 +6,6 @@ import { DataTable } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
-import { Button } from "primereact/button";
 
 import { Expense } from "@prisma/client";
 
@@ -21,9 +20,11 @@ import styles from "./expensesPage.module.css";
 export default function ExpensesPage({ userId }: { userId?: number }) {
   const [selection, setSelection] = useState<Expense[]>([]);
 
-  const expenses = userId
-    ? useStore((state) => state.userExpenses.get(userId))
-    : useStore((state) => state.commonExpenses);
+  const userExpenses = useStore((state) =>
+    state.userExpenses.get(userId ?? -1)
+  );
+  const commonExpenses = useStore((state) => state.commonExpenses);
+  const expenses = userId ? userExpenses : commonExpenses;
 
   const loading = useStore((state) => state.loading);
 

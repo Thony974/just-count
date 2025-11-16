@@ -9,7 +9,7 @@ import ReportTemplate from "@/components/ReportTemplate";
 
 import styles from "./page.module.css";
 
-export default function () {
+export default function Report() {
   const [doc, setDoc] = useState("");
 
   const renderDocument = async () => {

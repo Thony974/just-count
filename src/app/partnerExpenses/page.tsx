@@ -2,7 +2,7 @@
 
 import ExpensesPage from "@components/ExpensesPage";
 
-export default function () {
+export default function PartnerExpenses() {
   return (
     <ExpensesPage userId={2} /> // TODO: Assuming a static user ID for now
   );

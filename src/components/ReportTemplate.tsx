@@ -41,7 +41,7 @@ const TableExpenses = ({
   </View>
 );
 
-export default function () {
+export default function ReportTemplate() {
   const users = useStore((state) => state.users);
   const userSalary = useStore((state) => state.userSalary);
   const userQuota = useStore((state) => state.userQuota);

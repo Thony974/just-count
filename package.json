@@ -1,12 +1,16 @@
 {
   "name": "just-count",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "prisma:reset": "npx prisma migrate reset",
+    "prisma:generate": "npx prisma generate",
+    "prisma:dbpush": "npx prisma db push",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "postinstall": "npm run prisma:generate && npm run prisma:dbpush && npm run prisma:seed",
+    "dev": "npm run build && next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "prisma-seed": "tsx prisma/seed.ts",
     "lint": "next lint",
     "test": "jest"
   },

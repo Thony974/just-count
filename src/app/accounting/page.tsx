@@ -15,7 +15,7 @@ import LoadingComponent from "@/components/LoadingComponent";
 
 import styles from "./page.module.css";
 
-export default function () {
+export default function Accounting() {
   const router = useRouter();
 
   const users = useStore((state) => state.users);

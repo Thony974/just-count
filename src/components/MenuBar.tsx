@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { Menubar } from "primereact/menubar";
 
-export default function () {
+export default function MenuBar() {
   const router = useRouter();
 
   return (
