@@ -82,7 +82,7 @@ export default function ReportTemplate() {
             }€`}</Text>
           ))}
         </View>
-        {comment.length && (
+        {comment.length > 0 && (
           <View style={styles.comment}>
             <Text style={{ fontWeight: "bold" }}>Commentaires:</Text>
             <Text>{comment}</Text>
