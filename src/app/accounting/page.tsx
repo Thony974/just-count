@@ -33,20 +33,15 @@ export default function Accounting() {
   const updateSalary = useStore((state) => state.updateSalary);
   const setQuota = useStore((state) => state.setQuota);
   const pickUserExpenses = useStore((state) => state.pickUserExpenses);
-  // const resetUserExpensesPicked = useStore(
-  //   (state) => state.resetUserExpensesPicked
-  // );
+  const resetUserExpensesPicked = useStore(
+    (state) => state.resetUserExpensesPicked,
+  );
   const setComment = useStore((state) => state.setComment);
 
   const [fetchingData, setFetchingData] = useState(true);
 
   const fetchData = async () => {
-    /**
-     * FIXME: Optimization issue, will reload all pages in cache...that's weird
-     * But reset picked expenses causes react-pdf reconcilier issues...
-     */
-    if (userExpensesPicked.size) window.location.reload();
-    // resetUserExpensesPicked();
+    resetUserExpensesPicked();
 
     // TODO: Fix userId hardcoding
     await fetchUsers();
