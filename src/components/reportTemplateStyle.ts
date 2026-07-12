@@ -15,6 +15,10 @@ export const styles = StyleSheet.create({
     justifyContent: "flex-end",
     fontWeight: "bold",
   },
+  comment: {
+    margin: 10,
+    fontSize: 11,
+  },
   quota: {
     display: "flex",
     flexDirection: "column",

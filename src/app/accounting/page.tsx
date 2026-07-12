@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
 import { Button } from "primereact/button";
+import { InputTextarea } from "primereact/inputtextarea";
 
 import { Expense } from "@prisma/client";
 import useStore from "@/services/statemanager/store";
@@ -17,6 +18,7 @@ import styles from "./page.module.css";
 
 export default function Accounting() {
   const router = useRouter();
+  const commentComponent = useRef<HTMLTextAreaElement>(null);
 
   const users = useStore((state) => state.users);
   const userSalary = useStore((state) => state.userSalary);
@@ -31,19 +33,15 @@ export default function Accounting() {
   const updateSalary = useStore((state) => state.updateSalary);
   const setQuota = useStore((state) => state.setQuota);
   const pickUserExpenses = useStore((state) => state.pickUserExpenses);
-  // const resetUserExpensesPicked = useStore(
-  //   (state) => state.resetUserExpensesPicked
-  // );
+  const resetUserExpensesPicked = useStore(
+    (state) => state.resetUserExpensesPicked,
+  );
+  const setComment = useStore((state) => state.setComment);
 
   const [fetchingData, setFetchingData] = useState(true);
 
   const fetchData = async () => {
-    /**
-     * FIXME: Optimization issue, will reload all pages in cache...that's weird
-     * But reset picked expenses causes react-pdf reconcilier issues...
-     */
-    if (userExpensesPicked.size) window.location.reload();
-    // resetUserExpensesPicked();
+    resetUserExpensesPicked();
 
     // TODO: Fix userId hardcoding
     await fetchUsers();
@@ -88,6 +86,11 @@ export default function Accounting() {
     });
   }, [userSalary, userExpensesPicked, commonExpenses, fetchingData]);
 
+  const handleGenerateReport = () => {
+    setComment(commentComponent.current?.value ?? "");
+    router.push("/report");
+  };
+
   return fetchingData ? (
     <LoadingComponent />
   ) : (
@@ -107,11 +110,18 @@ export default function Accounting() {
           />
         </div>
       ))}
+      <div className={styles.textAreaContainer}>
+        <InputTextarea
+          ref={commentComponent}
+          style={{ width: "100%" }}
+          placeholder="Commentaires..."
+        />
+      </div>
       <div className={styles.submitButtonContainer}>
         <Button
-          label={"Terminé"}
+          label={"Générer le rapport"}
           icon="pi pi-check"
-          onClick={() => router.push("/report")}
+          onClick={() => handleGenerateReport()}
         />
       </div>
     </>

@@ -27,6 +27,7 @@ export default function ExpenseInput({
   const deleteExpenses = useStore((state) => state.deleteExpenses);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const [newExpense, setNewExpense] = useState({
     title: "",
     amount: 0.0,
@@ -53,6 +54,7 @@ export default function ExpenseInput({
   const cleanup = () => {
     formRef.current?.reset();
     setNewExpense({ title: "", amount: 0.0 });
+    titleInputRef.current?.focus();
   };
 
   return (
@@ -62,6 +64,7 @@ export default function ExpenseInput({
       action={addNewExpense}
     >
       <InputText
+        ref={titleInputRef}
         className={styles.expenseInputItem}
         name="title"
         placeholder="Nom"

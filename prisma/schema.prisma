@@ -20,6 +20,7 @@ model Expense {
   category Category? @relation(fields: [categoryId], references: [id])
   userId Int?
   user User? @relation(fields: [userId], references: [id])
+  isPlanned Boolean @default(false)
 
   @@index([userId])
   @@index([categoryId])

@@ -8,6 +8,7 @@ import {
 
 import { Expense } from "@prisma/client";
 import useStore from "@/services/statemanager/store";
+import { getCurrentDateMMYYYY } from "@/utils/utils";
 
 import { styles } from "./reportTemplateStyle";
 
@@ -47,12 +48,13 @@ export default function ReportTemplate() {
   const userQuota = useStore((state) => state.userQuota);
   const userExpensesPicked = useStore((state) => state.userExpensesPicked);
   const commonExpenses = useStore((state) => state.commonExpenses);
+  const comment = useStore((state) => state.comment);
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.section}>
-          <Text>Compte ??/2025</Text>
+          <Text>Compte {getCurrentDateMMYYYY()}</Text>
         </View>
         {users.map(({ id, name }) => (
           <View key={`accounting-${id}`} style={styles.section}>
@@ -80,6 +82,12 @@ export default function ReportTemplate() {
             }€`}</Text>
           ))}
         </View>
+        {comment.length > 0 && (
+          <View style={styles.comment}>
+            <Text style={{ fontWeight: "bold" }}>Commentaires:</Text>
+            <Text>{comment}</Text>
+          </View>
+        )}
       </Page>
     </Document>
   );

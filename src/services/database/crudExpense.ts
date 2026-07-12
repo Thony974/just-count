@@ -73,3 +73,18 @@ export async function deleteExpenses(ids: string[]) {
     return null;
   }
 }
+
+export async function cleanupUnplannedExpenses() {
+  console.debug("Cleaning up unplanned expenses");
+
+  try {
+    const deletedExpenses = await prisma.expense.deleteMany({
+      where: { isPlanned: false },
+    });
+
+    return deletedExpenses;
+  } catch (error) {
+    console.error("Error cleaning up unplanned expenses:", error);
+    return null;
+  }
+}
