@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@database/prisma";
 
 async function main() {
   // Create default users
@@ -32,39 +30,19 @@ async function main() {
       // Anthony
       {
         userId: idAnthony,
-        title: "Billet Paris Nice",
-        amount: 1414.14,
+        title: "Courses la vie claire",
+        amount: 18.22,
       },
       // Romy
       {
         userId: idRomy,
-        title: "Ménage",
-        amount: 360,
-      },
-      {
-        userId: idRomy,
-        title: "Amazon",
+        title: "Cadeaux maitresse EME",
         amount: 87.74,
       },
       {
         userId: idRomy,
         title: "Cours parentalité",
         amount: 39.99,
-      },
-      {
-        userId: idRomy,
-        title: "Savon",
-        amount: 7.47,
-      },
-      {
-        userId: idRomy,
-        title: "Hello Fresh",
-        amount: 778.24,
-      },
-      {
-        userId: idRomy,
-        title: "Gateau photo mariage",
-        amount: 580,
       },
       {
         userId: idRomy,
