@@ -1,8 +1,8 @@
 "use server";
 
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 
-import { prisma } from "@database/prisma";
+import prisma from "@database/prisma/prisma";
 
 export async function createExpense({
   title,

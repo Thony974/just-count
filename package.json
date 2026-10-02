@@ -3,7 +3,7 @@
   "version": "1.1.1",
   "private": true,
   "scripts": {
-    "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:seed": "tsx scripts/seed.ts",
     "prisma:init": "npx prisma db push && npm run prisma:seed",
     "postinstall": "npx prisma generate",
     "dev": "npm run build && next dev --turbopack",

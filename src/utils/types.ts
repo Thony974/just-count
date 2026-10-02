@@ -1,4 +1,4 @@
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 
 export interface UserAccounting {
   userId: number;

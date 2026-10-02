@@ -22,8 +22,7 @@
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
       "@database/*": ["./src/services/database/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@prisma/*": ["./prisma/prisma/*"]
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": [

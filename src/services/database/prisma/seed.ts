@@ -1,4 +1,4 @@
-import { prisma } from "@database/prisma";
+import prisma from "@database/prisma/prisma";
 
 async function main() {
   // Create default users
