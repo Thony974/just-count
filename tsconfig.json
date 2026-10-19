@@ -22,7 +22,8 @@
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
       "@database/*": ["./src/services/database/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@auth/*": ["./src/services/auth/*"]
     }
   },
   "include": [

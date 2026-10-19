@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Image from "next/image";
 
 import MenuBar from "@components/MenuBar";
 
@@ -41,7 +40,7 @@ export default function RootLayout({
             gap: "1em",
           }}
         >
-          <Image alt="" src={"/icon.png"} width={50} height={50} />
+          <img src="/icon.png" alt="Le compte juste" width={50} height={50} />
           <h1>Le compte juste</h1>
         </div>
         <MenuBar />
