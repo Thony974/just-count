@@ -1,4 +1,4 @@
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 
 import { AccountingParameters, AccountingResults } from "./types";
 
@@ -31,7 +31,7 @@ export function computeQuota({
 
   const totalSalaries = userAccounting.reduce(
     (acc, { salary }) => acc + salary,
-    0
+    0,
   );
   const totalExpenses =
     userAccounting

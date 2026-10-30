@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { Button } from "primereact/button";
 
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 
 import useStore from "@/services/statemanager/store";
 
@@ -85,8 +85,13 @@ export default function ExpenseInput({
         }
         required
       />
-      <Button label={"Ajouter"} icon="pi pi-plus" />
       <Button
+        className={styles.addExpenseAction}
+        label={"Ajouter"}
+        icon="pi pi-plus"
+      />
+      <Button
+        className={styles.deleteSelectionAction}
         style={{ visibility: toDeleteSelection?.length ? "initial" : "hidden" }}
         label={"Supprimer selection"}
         icon="pi pi-trash"

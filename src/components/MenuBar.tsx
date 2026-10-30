@@ -10,9 +10,9 @@ export default function MenuBar() {
   return (
     <Menubar
       model={[
-        { label: "Mes dépenses", command: () => router.push("/") },
+        { label: "Dépenses Romy", command: () => router.push("/") },
         {
-          label: "Dépenses conjoint",
+          label: "Dépenses Anthony",
           command: () => router.push("/partnerExpenses"),
         },
         {

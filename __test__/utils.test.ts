@@ -1,4 +1,4 @@
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 
 import {
   computeExpensesAmount,
@@ -11,7 +11,7 @@ import {
 describe("computeQuota", () => {
   it("should throw an error if userAccounting is empty", () => {
     expect(() =>
-      computeQuota({ userAccounting: [], commonExpenses: [] })
+      computeQuota({ userAccounting: [], commonExpenses: [] }),
     ).toThrow("Cannot compute quota with no users");
   });
 

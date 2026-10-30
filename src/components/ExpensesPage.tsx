@@ -7,7 +7,7 @@ import { Column, ColumnEditorOptions } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 
 import useStore from "@/services/statemanager/store";
 import { formatCurrency, formatDate } from "@utils/utils";
@@ -22,7 +22,7 @@ export default function ExpensesPage({ userId }: { userId?: number }) {
   const [selection, setSelection] = useState<Expense[]>([]);
 
   const userExpenses = useStore((state) =>
-    state.userExpenses.get(userId ?? -1)
+    state.userExpenses.get(userId ?? -1),
   );
   const commonExpenses = useStore((state) => state.commonExpenses);
   const expenses = userId ? userExpenses : commonExpenses;

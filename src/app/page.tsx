@@ -4,6 +4,6 @@ import ExpensesPage from "@components/ExpensesPage";
 
 export default function Home() {
   return (
-    <ExpensesPage userId={1} /> // TODO: Assuming a static user ID for now
+    <ExpensesPage userId={2} /> // TODO: Assuming a static user ID for now
   );
 }

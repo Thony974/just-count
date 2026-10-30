@@ -6,7 +6,7 @@ import {
   TableCell,
 } from "@ag-media/react-pdf-table";
 
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 import useStore from "@/services/statemanager/store";
 import { getCurrentDateMMYYYY } from "@/utils/utils";
 

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 import useStore from "@/services/statemanager/store";
 import { computeQuota } from "@/utils/utils";
 import UserBalanceInput from "@/components/UserBalanceInput";

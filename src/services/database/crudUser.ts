@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@database/prisma";
+import prisma from "@database/prisma/prisma";
 
 export async function getUsers() {
   try {

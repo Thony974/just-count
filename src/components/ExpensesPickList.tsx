@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { PickList, PickListChangeEvent } from "primereact/picklist";
 import { Tag } from "primereact/tag";
 
-import { Expense } from "@prisma/client";
+import { Expense } from "@database/prisma/generated/client";
 
 import {
   computeExpensesAmount,

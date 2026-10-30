@@ -1,6 +1,11 @@
 import { create } from "zustand";
 
-import { Expense, Prisma, Salary, User } from "@prisma/client";
+import {
+  Expense,
+  Prisma,
+  Salary,
+  User,
+} from "@database/prisma/generated/client";
 
 import { getUsers } from "@/services/database/crudUser";
 import {
@@ -29,7 +34,7 @@ interface StoreState {
   fetchSalary: (userId: number) => Promise<void>;
   fetchExpenses: (userId: number | null) => Promise<void>;
   addExpense: (
-    expense: Pick<Expense, "title" | "amount" | "userId">
+    expense: Pick<Expense, "title" | "amount" | "userId">,
   ) => Promise<void>;
   updateExpense: (expense: Expense) => Promise<Expense | null>;
   deleteExpenses: (id: string[]) => Promise<Prisma.BatchPayload | null>;
@@ -145,7 +150,7 @@ const useStore = create<StoreState>((set, get) => ({
         return { userExpenses, loading: false };
       } else {
         const commonExpenses = state.commonExpenses.map((commonExpense) =>
-          commonExpense.id === expense.id ? updatedExpense : commonExpense
+          commonExpense.id === expense.id ? updatedExpense : commonExpense,
         );
         console.log("Updated common expenses:", commonExpenses);
         return { commonExpenses, loading: false };
@@ -167,11 +172,11 @@ const useStore = create<StoreState>((set, get) => ({
       state.userExpenses.forEach((expenses, userId) => {
         userExpenses.set(
           userId,
-          expenses.filter((expense) => !ids.includes(expense.id))
+          expenses.filter((expense) => !ids.includes(expense.id)),
         );
       });
       const commonExpenses = state.commonExpenses.filter(
-        (expense) => !ids.includes(expense.id)
+        (expense) => !ids.includes(expense.id),
       );
       return { userExpenses, commonExpenses, loading: false };
     });
@@ -191,7 +196,7 @@ const useStore = create<StoreState>((set, get) => ({
       state.userExpenses.forEach((expenses, userId) => {
         userExpenses.set(
           userId,
-          expenses.filter((expense) => expense.isPlanned)
+          expenses.filter((expense) => expense.isPlanned),
         );
       });
 
@@ -199,7 +204,7 @@ const useStore = create<StoreState>((set, get) => ({
       console.log("Cleanup unplanned expenses:", deletedExpenses);
 
       const commonExpenses = state.commonExpenses.filter(
-        (expense) => expense.isPlanned
+        (expense) => expense.isPlanned,
       );
       return { userExpenses, commonExpenses, loading: false };
     });
@@ -210,7 +215,7 @@ const useStore = create<StoreState>((set, get) => ({
     set((state) => ({
       userExpensesPicked: new Map(state.userExpensesPicked).set(
         userId,
-        expenses
+        expenses,
       ),
     }));
   },

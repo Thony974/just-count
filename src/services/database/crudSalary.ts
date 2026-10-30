@@ -1,8 +1,8 @@
 "use server";
 
-import { Salary } from "@prisma/client";
+import { Salary } from "@database/prisma/generated/client";
 
-import { prisma } from "@database/prisma";
+import prisma from "@database/prisma/prisma";
 
 export async function updateUserSalary({
   amount,
