@@ -2,12 +2,13 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  width: 100%;
 }
 
 .salaryInputs {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
   width: 100%;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -15,9 +16,32 @@
 
 .inputContent {
   display: flex;
+  flex: 1 1 16rem;
   flex-direction: column;
+  min-width: 0;
+}
+
+.inputContent :global(.p-inputnumber),
+.inputContent :global(.p-inputnumber-input) {
+  width: 100%;
 }
 
 .textAlignRight {
   text-align: right;
+}
+
+@media (max-width: 640px) {
+  .salaryInputs {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .inputContent {
+    flex-basis: 100%;
+    width: 100%;
+  }
+
+  .textAlignRight {
+    text-align: left;
+  }
 }

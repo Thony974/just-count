@@ -85,8 +85,13 @@ export default function ExpenseInput({
         }
         required
       />
-      <Button label={"Ajouter"} icon="pi pi-plus" />
       <Button
+        className={styles.addExpenseAction}
+        label={"Ajouter"}
+        icon="pi pi-plus"
+      />
+      <Button
+        className={styles.deleteSelectionAction}
         style={{ visibility: toDeleteSelection?.length ? "initial" : "hidden" }}
         label={"Supprimer selection"}
         icon="pi pi-trash"
