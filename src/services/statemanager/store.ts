@@ -13,7 +13,6 @@ import {
   updateUserSalary,
 } from "@/services/database/crudSalary";
 import {
-  cleanupUnplannedExpenses,
   createExpense,
   deleteExpenses,
   getExpenses,
@@ -38,12 +37,45 @@ interface StoreState {
   ) => Promise<void>;
   updateExpense: (expense: Expense) => Promise<Expense | null>;
   deleteExpenses: (id: string[]) => Promise<Prisma.BatchPayload | null>;
-  cleanupUnplannedExpenses: () => Promise<Prisma.BatchPayload | null>;
+  cleanupExpenses: () => Promise<Prisma.BatchPayload | null>;
   pickUserExpenses: (userId: number, expenses: Expense[]) => void;
   resetUserExpensesPicked: () => void;
   setQuota: (userId: number, quota: number) => void;
   setComment: (comment: string) => void;
 }
+
+const removeExpensesFromState = (state: StoreState, ids: string[]) => {
+  const userExpenses = new Map(state.userExpenses);
+
+  state.userExpenses.forEach((expenses, userId) => {
+    const filteredExpenses = expenses.filter(
+      (expense) => !ids.includes(expense.id),
+    );
+    if (filteredExpenses.length) {
+      userExpenses.set(userId, filteredExpenses);
+    } else {
+      userExpenses.delete(userId);
+    }
+  });
+
+  const userExpensesPicked = new Map(state.userExpensesPicked);
+  state.userExpensesPicked.forEach((expenses, userId) => {
+    const filteredExpenses = expenses.filter(
+      (expense) => !ids.includes(expense.id),
+    );
+    if (filteredExpenses.length) {
+      userExpensesPicked.set(userId, filteredExpenses);
+    } else {
+      userExpensesPicked.delete(userId);
+    }
+  });
+
+  const commonExpenses = state.commonExpenses.filter(
+    (expense) => !ids.includes(expense.id),
+  );
+
+  return { userExpenses, userExpensesPicked, commonExpenses };
+};
 
 const useStore = create<StoreState>((set, get) => ({
   loading: false,
@@ -68,6 +100,7 @@ const useStore = create<StoreState>((set, get) => ({
   },
   updateSalary: async ({ userId, amount }) => {
     set({ loading: true });
+
     await updateUserSalary({ userId, amount });
     set((state) => ({
       userSalary: new Map(state.userSalary).set(userId, amount),
@@ -109,6 +142,7 @@ const useStore = create<StoreState>((set, get) => ({
   },
   addExpense: async ({ title, amount, userId }) => {
     set({ loading: true });
+
     const expense = await createExpense({ title, amount, userId });
     if (!expense) {
       set({ loading: false });
@@ -132,6 +166,7 @@ const useStore = create<StoreState>((set, get) => ({
   },
   updateExpense: async (expense) => {
     set({ loading: true });
+
     const updatedExpense = await updateExpense(expense);
     if (!updatedExpense) {
       set({ loading: false });
@@ -152,7 +187,6 @@ const useStore = create<StoreState>((set, get) => ({
         const commonExpenses = state.commonExpenses.map((commonExpense) =>
           commonExpense.id === expense.id ? updatedExpense : commonExpense,
         );
-        console.log("Updated common expenses:", commonExpenses);
         return { commonExpenses, loading: false };
       }
     });
@@ -161,53 +195,54 @@ const useStore = create<StoreState>((set, get) => ({
   },
   deleteExpenses: async (ids) => {
     set({ loading: true });
+
     const deletedExpenses = await deleteExpenses(ids);
     if (!deletedExpenses) {
       set({ loading: false });
       return null;
     }
 
-    set((state) => {
-      const userExpenses = new Map(state.userExpenses);
-      state.userExpenses.forEach((expenses, userId) => {
-        userExpenses.set(
-          userId,
-          expenses.filter((expense) => !ids.includes(expense.id)),
-        );
-      });
-      const commonExpenses = state.commonExpenses.filter(
-        (expense) => !ids.includes(expense.id),
-      );
-      return { userExpenses, commonExpenses, loading: false };
-    });
+    set((state) => ({
+      ...removeExpensesFromState(state, ids),
+      loading: false,
+    }));
 
     return deletedExpenses;
   },
-  cleanupUnplannedExpenses: async () => {
+  cleanupExpenses: async () => {
     set({ loading: true });
-    const deletedExpenses = await cleanupUnplannedExpenses();
+
+    // To delete: User picked AND unplanned expenses (keep planned expenses for each months)
+    const userExpensesPicked = get().userExpensesPicked;
+    const expenseIdsToDelete: string[] = [];
+    expenseIdsToDelete.push(
+      ...Array.from(userExpensesPicked.values()).flatMap((expenses) =>
+        expenses
+          .filter((expense) => !expense.isPlanned)
+          .map((expense) => expense.id),
+      ),
+    );
+
+    // To delete: common unplanned expenses (keep planned expenses for each months)
+    const commonExpenses = get().commonExpenses;
+    expenseIdsToDelete.push(
+      ...commonExpenses
+        .filter((expense) => !expense.isPlanned)
+        .map((expense) => expense.id),
+    );
+
+    // Delete from database
+    const deletedExpenses = await deleteExpenses(expenseIdsToDelete);
     if (!deletedExpenses) {
       set({ loading: false });
       return null;
     }
 
-    set((state) => {
-      const userExpenses = new Map(state.userExpenses);
-      state.userExpenses.forEach((expenses, userId) => {
-        userExpenses.set(
-          userId,
-          expenses.filter((expense) => expense.isPlanned),
-        );
-      });
-
-      // FIXME: Remove deletecExpenses instead idem for deletedExpenses above
-      console.log("Cleanup unplanned expenses:", deletedExpenses);
-
-      const commonExpenses = state.commonExpenses.filter(
-        (expense) => expense.isPlanned,
-      );
-      return { userExpenses, commonExpenses, loading: false };
-    });
+    // Update state accordingly after deletion
+    set((state) => ({
+      ...removeExpensesFromState(state, expenseIdsToDelete),
+      loading: false,
+    }));
 
     return deletedExpenses;
   },

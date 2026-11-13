@@ -56,8 +56,5 @@ export function computeQuota({
     return { userId, quota: userQuota - userExpensesAmount };
   });
 
-  console.log("User accounting:", userAccounting);
-  console.log("Computed quotas:", quotas);
-
   return quotas;
 }

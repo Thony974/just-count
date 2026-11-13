@@ -17,7 +17,7 @@ import styles from "./page.module.css";
 export default function Report() {
   const router = useRouter();
 
-  const cleanup = useStore((state) => state.cleanupUnplannedExpenses);
+  const cleanup = useStore((state) => state.cleanupExpenses);
 
   const [doc, setDoc] = useState("");
 
