@@ -3,13 +3,13 @@
 import { useRef, useState } from "react";
 
 import { InputText } from "primereact/inputtext";
-import { InputNumber } from "primereact/inputnumber";
 import { Button } from "primereact/button";
 
 import { Expense } from "@database/prisma/generated/client";
 
 import useStore from "@/services/statemanager/store";
 
+import { StyledCurrencyInput } from "./StyledCurrencyInput";
 import styles from "./expenseInput.module.css";
 
 export interface ExpenseInputProps {
@@ -73,15 +73,12 @@ export default function ExpenseInput({
         }
         required
       />
-      <InputNumber
+      {/** InputNumber does not handle decimal input intuitively on some mobile browsers */}
+      <StyledCurrencyInput
         className={styles.expenseInputItem}
         name="amount"
-        placeholder="0,00 €"
-        mode="currency"
-        currency="EUR"
-        locale="fr-FR"
-        onChange={(e) =>
-          setNewExpense({ ...newExpense, amount: e.value ?? 0.0 })
+        onValueChange={(_, __, values) =>
+          setNewExpense({ ...newExpense, amount: values?.float ?? 0.0 })
         }
         required
       />
